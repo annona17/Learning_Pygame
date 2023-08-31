@@ -7,7 +7,7 @@ WINDOW_HEIGHT = 600
 BACKGROUND = pygame.image.load('img/background.jpg')
 
 pygame.init()
-FPS = 60
+FPS = 10
 fpsClock = pygame.time.Clock()
 
 DISPLAYSURF = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -17,7 +17,7 @@ pygame.display.set_caption('Flappy bird')
 BIRD_WIDTH = 70
 BIRD_HEIGHT = 70
 G = 0.5
-SPEEDLY = -8
+SPEED_FLY = -8
 BIRD_IMG = pygame.image.load('img/bird.png')
 BIRD_scale = pygame.transform.scale(BIRD_IMG, (BIRD_WIDTH, BIRD_HEIGHT))
 
@@ -32,6 +32,15 @@ class Bird():
         
     def draw(self): 
         DISPLAYSURF.blit(self.surface, (int(self.x), int(self.y)))
+    
+    def update(self):
+        self.y += self.speed + 0.5*G
+        self.speed += G
+    
+    def upFly(self, event):
+        if event.type == pygame.KEYDOWN: 
+            if event.key == pygame.K_SPACE: 
+                self.speed = SPEED_FLY   
             
 def main(): 
     bird = Bird()
@@ -40,10 +49,12 @@ def main():
             if event.type == QUIT: 
                 pygame.quit()
                 sys.exit()
+            bird.upFly(event)
                 
         DISPLAYSURF.blit(BACKGROUND, (0,0))
         
         bird.draw()
+        bird.update()
         
         pygame.display.update()
         fpsClock.tick(FPS)
