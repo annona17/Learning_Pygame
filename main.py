@@ -8,11 +8,11 @@ WINDOW_HEIGHT = 600
 BACKGROUND = pygame.image.load('img/background.jpg')
 
 pygame.init()
-FPS = 10
+FPS = 60
 fpsClock = pygame.time.Clock()
 
 DISPLAYSURF = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-pygame.display.set_caption('Flappy bird')
+pygame.display.set_caption('Flappy chicken')
 
 # Tao lop con chim 
 BIRD_WIDTH = 60
@@ -48,9 +48,9 @@ class Bird():
 # Tao lop cot 
 COLUMN_WIDTH = 40
 COLUMN_HEIGHT = 350
-BLANK = 120
+BLANK = 150
 DISTANCE = 250
-COLUMN_SPEED = 2
+COLUMN_SPEED = 1
 COLUMN_IMG = pygame.image.load('img/column.png')
 COLUMN_scale = pygame.transform.scale(COLUMN_IMG, (COLUMN_WIDTH, COLUMN_HEIGHT))
 
@@ -65,14 +65,26 @@ class Columns():
         self.ls = []
         for i in range(4):
             x = i*self.distance
-            y = random.randrange(100, WINDOW_HEIGHT - self.blank - 100, 30)
+            y = random.randrange(60, WINDOW_HEIGHT - self.blank - 60, 30)
             self.ls.append([x,y])
     
     def draw(self): 
         for i in range(4): 
             DISPLAYSURF.blit(self.surface, (self.ls[i][0], self.ls[i][1] - self.height))
             DISPLAYSURF.blit(self.surface, (self.ls[i][0], self.ls[i][1] + self.blank)) 
-             
+    
+    def update(self): 
+        for i in range(4): 
+            self.ls[i][0] -= self.speed
+        if self.ls[0][0] < - self.width: 
+            self.ls.pop(0)
+            x = self.ls[2][0] + self.distance
+            y = random.randrange(60, WINDOW_HEIGHT - self.blank - 60, 30)
+            self.ls.append([x,y])
+
+# Xu ly va cham
+
+          
 def main(): 
     bird = Bird()
     columns = Columns()
@@ -87,6 +99,7 @@ def main():
         DISPLAYSURF.blit(BACKGROUND, (0,0))
         
         columns.draw()
+        columns.update()
         
         bird.draw()
         bird.update()
