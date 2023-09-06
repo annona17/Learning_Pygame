@@ -18,7 +18,7 @@ pygame.display.set_caption('Flappy chicken')
 BIRD_WIDTH = 60
 BIRD_HEIGHT = 60
 G = 0.5
-SPEED_FLY = -8
+SPEED_FLY = -7
 BIRD_IMG = pygame.image.load('img/bird.png')
 BIRD_scale = pygame.transform.scale(BIRD_IMG, (BIRD_WIDTH, BIRD_HEIGHT))
 
@@ -83,8 +83,25 @@ class Columns():
             self.ls.append([x,y])
 
 # Xu ly va cham
+def collision(ob1, ob2):
+    ob1 = [float(x) for x in ob1]  
+    ob2 = [float(x) for x in ob2] 
+    if ob1[0] <= ob2[0] + ob2[2] and ob2[0] <= ob1[0] + ob1[2] and ob1[1] <= ob2[1] + ob2[3] and ob2[1] <= ob1[1] + ob1[3]:
+        return True
+    return False
 
-          
+# Kiem tra game over 
+def isGameOver(bird, columns): 
+    for i in range(4): 
+        obBird = [bird.x, bird.y, bird.width, bird.height]
+        obColumn1 = [columns.ls[i][0], columns.ls[i][1] - columns.height, columns.width, columns.height]
+        obColumn2 = [columns.ls[i][0], columns.ls[i][1] + columns.blank, columns.width, columns.height]
+        if collision(obBird, obColumn1) == True or collision(obBird, obColumn2) == True: 
+            return True
+    if bird.y + bird.height < 0 or bird.y + bird.height > WINDOW_HEIGHT: 
+        return True
+    return False
+        
 def main(): 
     bird = Bird()
     columns = Columns()
@@ -94,9 +111,12 @@ def main():
             if event.type == QUIT: 
                 pygame.quit()
                 sys.exit()
-            bird.upFly(event)
-                
-        DISPLAYSURF.blit(BACKGROUND, (0,0))
+            bird.upFly(event)    
+        if isGameOver(bird, columns) == True: 
+            pygame.quit()
+            sys.exit()
+                    
+        DISPLAYSURF.blit(BACKGROUND, (0,0)) 
         
         columns.draw()
         columns.update()
