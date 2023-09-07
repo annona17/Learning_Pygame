@@ -129,10 +129,13 @@ class Score():
         else: 
             self.addScore = True 
             
-def main(): 
-    bird = Bird()
-    columns = Columns()
-    score = Score()
+# Tao gamePlay: 
+def gamePlay(bird, columns, score): 
+    bird.__init__()
+    bird.speed = SPEED_FLY
+    
+    columns.__init__()
+    score.__init__()
     
     while True: 
         for event in pygame.event.get(): 
@@ -142,8 +145,7 @@ def main():
             bird.upFly(event)
                 
         if isGameOver(bird, columns) == True: 
-            pygame.quit()
-            sys.exit()
+           return 
                     
         DISPLAYSURF.blit(BACKGROUND, (0,0)) 
         
@@ -158,6 +160,77 @@ def main():
         
         pygame.display.update()
         fpsClock.tick(FPS)
-         
+
+# Tao gameStart
+def gameStart(bird): 
+    bird.__init__()
+    
+    font = pygame.font.SysFont('consolas', 60)
+    headingSurface = font.render('FLAPPY CHICKEN', True, (255, 0, 0))
+    headingSize = headingSurface.get_size()
+    
+    font = pygame.font.SysFont('consolas', 50)
+    playSurface = font.render('Play game', True, (0,255,0))
+    playSize = playSurface.get_size()
+    
+    while True: 
+        for event in pygame.event.get(): 
+            if event.type == QUIT: 
+                pygame.quit()
+                sys.exit()
+            if event.type == MOUSEBUTTONDOWN: 
+                return
+        
+        DISPLAYSURF.blit(BACKGROUND, (0,0))
+        
+        bird.draw()
+        DISPLAYSURF.blit(headingSurface, (int((WINDOW_WIDTH - headingSize[0])/2), 100))
+        DISPLAYSURF.blit(playSurface, (int((WINDOW_WIDTH - playSize[0])/3*2), 280))
+        
+        pygame.display.update()
+        fpsClock.tick(FPS)
+
+#Tao gameOver
+def gameOver(bird, columns, score ): 
+    font = pygame.font.SysFont('consolas', 60)
+    headingSurface = font.render('Game over', True, (255, 0, 0))
+    headingSize = headingSurface.get_size()
+    
+    font = pygame.font.SysFont('consolas', 40)
+    scoreSurface = font.render('Score: ' + str(score.score), True, (0,255,0))
+    scoreSize = scoreSurface.get_size()
+    
+    while True: 
+        for event in pygame.event.get(): 
+            if event.type == QUIT: 
+                pygame.quit()
+                sys.exit()
+            if event.type == MOUSEBUTTONDOWN: 
+                return
+            
+        DISPLAYSURF.blit(BACKGROUND, (0,0))    
+        columns.draw()
+        bird.draw()
+            
+        overWindow = pygame.Surface((500, 350))
+        overWindow.fill((128, 128, 128))
+
+        overWindow.blit(headingSurface, (int((500-headingSize[0])/2), 50))
+        overWindow.blit(scoreSurface, (int((500-scoreSize[0])/2), 200))
+        
+        DISPLAYSURF.blit(overWindow, (175,125))
+        pygame.display.update()
+        fpsClock.tick(FPS)          
+           
+def main(): 
+    bird = Bird()
+    columns = Columns()
+    score = Score()
+    
+    while True: 
+        gameStart(bird)
+        gamePlay(bird, columns, score)
+        gameOver(bird, columns, score)
+            
 if __name__ == '__main__': 
     main()
