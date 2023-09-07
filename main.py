@@ -83,7 +83,7 @@ class Columns():
             self.ls.append([x,y])
 
 # Xu ly va cham
-def collision(ob1, ob2):
+def Collision(ob1, ob2):
     ob1 = [float(x) for x in ob1]  
     ob2 = [float(x) for x in ob2] 
     if ob1[0] <= ob2[0] + ob2[2] and ob2[0] <= ob1[0] + ob1[2] and ob1[1] <= ob2[1] + ob2[3] and ob2[1] <= ob1[1] + ob1[3]:
@@ -96,22 +96,51 @@ def isGameOver(bird, columns):
         obBird = [bird.x, bird.y, bird.width, bird.height]
         obColumn1 = [columns.ls[i][0], columns.ls[i][1] - columns.height, columns.width, columns.height]
         obColumn2 = [columns.ls[i][0], columns.ls[i][1] + columns.blank, columns.width, columns.height]
-        if collision(obBird, obColumn1) == True or collision(obBird, obColumn2) == True: 
+        if Collision(obBird, obColumn1) == True or Collision(obBird, obColumn2) == True: 
             return True
     if bird.y + bird.height < 0 or bird.y + bird.height > WINDOW_HEIGHT: 
         return True
     return False
+
+# Tao lop Score tinh diem 
+class Score(): 
+    def __init__(self):
+        self.score = 0
+        self.addScore = True
         
+    def draw(self): 
+        font = pygame.font.SysFont('consolas', 30)
+        scoreSurface = font.render('Score: ' + str(self.score), True, (0,0,255)) 
+        textSize = scoreSurface.get_size()
+        DISPLAYSURF.blit(scoreSurface, ((int(WINDOW_WIDTH) - textSize[0]), 0) )
+         
+    def update(self, bird, columns) : 
+        collision = False
+        for i in range(4): 
+            obColumn = [columns.ls[i][0] + columns.width, columns.ls[i][1], 1, columns.blank]
+            obBird = [bird.x, bird.y, bird.width, bird.height]
+            if Collision(obBird, obColumn) == True: 
+                collision = True
+                break
+        if collision == True: 
+            if self.addScore == True:  
+                self.score += 1
+            self.addScore = False 
+        else: 
+            self.addScore = True 
+            
 def main(): 
     bird = Bird()
     columns = Columns()
+    score = Score()
     
     while True: 
         for event in pygame.event.get(): 
             if event.type == QUIT: 
                 pygame.quit()
                 sys.exit()
-            bird.upFly(event)    
+            bird.upFly(event)
+                
         if isGameOver(bird, columns) == True: 
             pygame.quit()
             sys.exit()
@@ -123,9 +152,12 @@ def main():
         
         bird.draw()
         bird.update()
+
+        score.draw()
+        score.update(bird, columns)
         
         pygame.display.update()
         fpsClock.tick(FPS)
-        
+         
 if __name__ == '__main__': 
     main()
